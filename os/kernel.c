@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most certainly run into trouble"
@@ -63,7 +62,7 @@ void terminal_initialize(void)
 {
 	terminal_row = 0;
 	terminal_column = 0;
-	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+	terminal_color = vga_entry_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
 	
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
@@ -84,14 +83,40 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
+void shift_vga_buffer_up(void) 
+{
+    //SHIFT EVERYTHING UP ONE ROW
+    for ( int i = 1; i < VGA_HEIGHT; i ++) {
+        for ( int j = 0; j < VGA_WIDTH ; j ++) {
+            terminal_buffer[(i-1)*VGA_WIDTH+j] = terminal_buffer[i*VGA_WIDTH+j];
+        }
+    }
+    //CLEAR THE BOTTOM LINE
+    for ( int i = 0; i < VGA_WIDTH; i++) {
+        terminal_buffer[VGA_WIDTH*(VGA_HEIGHT - 1) + i] = 0;
+    }
+    terminal_column = 0;
+    terminal_row--;
+}
+
 void terminal_putchar(char c) 
 {
-	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
-	if (++terminal_column == VGA_WIDTH) {
-		terminal_column = 0;
-		if (++terminal_row == VGA_HEIGHT)
-			terminal_row = 0;
-	}
+  if ( c == '\n') {
+    terminal_row ++;
+    terminal_column = 0;
+    if ( terminal_row == VGA_HEIGHT ) {
+      shift_vga_buffer_up();
+    }
+  }
+  else {
+      terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
+	    if (++terminal_column == VGA_WIDTH) {
+		    terminal_column = 0;
+		    if (++terminal_row == VGA_HEIGHT) {
+            shift_vga_buffer_up();
+        }
+	    }
+  }
 }
 
 void terminal_write(const char* data, size_t size) 
@@ -111,5 +136,16 @@ void kernel_main(void)
 	terminal_initialize();
 
 	/* Newline support is left as an exercise. */
-	terminal_writestring("Hello, kernel World!\n");
+  terminal_writestring("START\n");
+  for ( int i = 0 ; i < 20 ; i ++ ) {
+    terminal_writestring("A\n");
+  }
+  terminal_writestring("OVERTHROW\n");
+  terminal_writestring("BACONNNNNNNNNNNNNNN\n");
+  terminal_writestring("WEIMAR\n");
+  terminal_writestring("RUS");
+  terminal_writestring("HELLO THIS IS SOME TEXT ON MY FINAL LINE\n");
+  terminal_writestring("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
 }
+
+
