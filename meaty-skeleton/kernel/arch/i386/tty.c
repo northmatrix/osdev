@@ -38,14 +38,40 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
+void shift_vga_buffer_up(void) 
+{
+    //SHIFT EVERYTHING UP ONE ROW
+    for ( size_t i = 1; i < VGA_HEIGHT; i ++) {
+        for ( size_t j = 0; j < VGA_WIDTH ; j ++) {
+            terminal_buffer[(i-1)*VGA_WIDTH+j] = terminal_buffer[i*VGA_WIDTH+j];
+        }
+    }
+    //CLEAR THE BOTTOM LINE
+    for ( size_t i = 0; i < VGA_WIDTH; i++) {
+        terminal_buffer[VGA_WIDTH*(VGA_HEIGHT - 1) + i] = 0;
+    }
+    terminal_column = 0;
+    terminal_row--;
+}
+
 void terminal_putchar(char c) {
 	unsigned char uc = c;
-	terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
-	if (++terminal_column == VGA_WIDTH) {
-		terminal_column = 0;
-		if (++terminal_row == VGA_HEIGHT)
-			terminal_row = 0;
-	}
+  if ( uc == '\n') {
+      terminal_row++;
+      terminal_column=0;
+      if ( terminal_row == VGA_HEIGHT ) {
+          shift_vga_buffer_up();
+      }
+  }
+  else {
+	    terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
+	    if (++terminal_column == VGA_WIDTH) {
+	        terminal_column = 0;
+		      if (++terminal_row == VGA_HEIGHT)
+              shift_vga_buffer_up();
+			        //terminal_row = 0;
+	    }
+  }
 }
 
 void terminal_write(const char* data, size_t size) {
