@@ -144,7 +144,6 @@ void kernel_main(void)
   terminal_writestring("BACONNNNNNNNNNNNNNN\n");
   terminal_writestring("WEIMAR\n");
   terminal_writestring("RUS");
-  terminal_writestring("HELLO THIS IS SOME TEXT ON MY FINAL LINE\n");
   terminal_writestring("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
 }
 
