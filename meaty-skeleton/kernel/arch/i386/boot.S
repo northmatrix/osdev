@@ -29,6 +29,8 @@ _start:
 	# Call the global constructors.
 	call _init
 
+  # push multiboot memory map onto stack 
+  pushl %ebx
 	# Transfer control to the main kernel.
 	call kernel_main
 

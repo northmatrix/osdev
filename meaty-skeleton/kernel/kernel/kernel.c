@@ -1,11 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <kernel/tty.h>
+#include <kernel/multiboot.h>
 
-void kernel_main(void) {
+void kernel_main(multiboot_info_t *mb_info) {
 	terminal_initialize();
-	printf("Hello my name is northmatrix, This is my OS\nIs it the best Operating system No is it the worst maybe\nIs it the most incomplete YES\n");
-  printf("Lets try and print an number to the screen below i will print my favorite number and below that a random number i also like\n");
-  printf("%d\n",13);
-  printf("%d\n",7188302);
+  if (!(mb_info->flags & (1 << 6))) return;
+    multiboot_mmap_t *mmap = (multiboot_mmap_t *) mb_info->mmap_addr;
+    while ((uint32_t) mmap < mb_info->mmap_addr + mb_info->mmap_length) {
+        printf("Base: %d, Length: %d, Type: %d\n", mmap->base_addr, mmap->length, mmap->type);
+        mmap = (multiboot_mmap_t *) ((uint32_t) mmap + mmap->size + 4);
+  }
+  printf("Welcome to KrustOS\n");
+  printf("This is a operating system developed in C\n");
+  printf("It was developed by Northmatrix\n");
+  printf("This is my favourite number %d\n",48172);
 } 
