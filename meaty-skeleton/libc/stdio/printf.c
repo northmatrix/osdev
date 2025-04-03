@@ -50,6 +50,16 @@ int printf(const char* restrict format, ...) {
 			if (!print(&c, sizeof(c)))
 				return -1;
 			written++;
+    }
+    else if (*format == 'd') {
+      format++;
+      int num = va_arg(parameters, int);
+      char buffer[20];
+      itoa(num, buffer, 10);
+      size_t len = strlen(buffer);
+      if (maxrem < len) return -1;
+      if (!print(buffer, len)) return -1;
+      written += len;
 		} else if (*format == 's') {
 			format++;
 			const char* str = va_arg(parameters, const char*);
