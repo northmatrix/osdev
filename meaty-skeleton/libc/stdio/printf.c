@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static bool print(const char* data, size_t length) {
@@ -50,8 +51,7 @@ int printf(const char* restrict format, ...) {
 			if (!print(&c, sizeof(c)))
 				return -1;
 			written++;
-    }
-    else if (*format == 'd') {
+    } else if (*format == 'd') {
       format++;
       int num = va_arg(parameters, int);
       char buffer[20];
@@ -71,9 +71,22 @@ int printf(const char* restrict format, ...) {
 			if (!print(str, len))
 				return -1;
 			written += len;
-		} else {
+		} else if (*format == 'x') {  // Hexadecimal format
+            format++;
+            unsigned int num = va_arg(parameters, unsigned int);
+            char buffer[20];
+            itoa(num, buffer, 16);  // Convert to hexadecimal (base 16)
+            size_t len = strlen(buffer);
+            if (maxrem < len) {
+                //errno = EOVERFLOW;
+                return -1;
+            }
+            if (!print(buffer, len))
+                return -1;
+            written += len;
+    } else {
 			format = format_begun_at;
-			size_t len = strlen(format);
+ 			size_t len = strlen(format);
 			if (maxrem < len) {
 				// TODO: Set errno to EOVERFLOW.
 				return -1;
