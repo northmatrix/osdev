@@ -26,6 +26,7 @@ stack_top:
 _start:
 	  movl $stack_top, %esp
     
+    # Push the mmap structure && multiboot magicboot
     pushl %eax
     pushl %ebx
 

@@ -15,15 +15,16 @@ void kernel_main(multiboot_info_t *mbd, unsigned int magic) {
         printf("invalid memory map given by GRUB bootloader");
     }
 
+    printf("OS Memory Map\n\n");
     /* Loop through the memory map and display the values */
-    int i;
+    unsigned int i;
     for(i = 0; i < mbd->mmap_length; 
         i += sizeof(multiboot_memory_map_t)) 
     {
         multiboot_memory_map_t* mmmt = 
             (multiboot_memory_map_t*) (mbd->mmap_addr + i);
 
-        printf("Start Addr: %x | Length: %x | Size: %x | Type: %d\n",
+        printf("SA: %lx | L: %lx | S: %lx | T: %d\n",
             mmmt->addr, mmmt->len, mmmt->size, mmmt->type);
 
         if(mmmt->type == MULTIBOOT_MEMORY_AVAILABLE) {
@@ -35,8 +36,5 @@ void kernel_main(multiboot_info_t *mbd, unsigned int magic) {
              */
         }
     }
-  printf("Welcome to KrustOS\n");
-  printf("This is a operating system developed in C\n");
-  printf("It was developed by Northmatrix\n");
-  printf("This is my favourite number %d\n",48172);
+    printf("\nWelcome to KrustOS\n");
 } 
